@@ -6,10 +6,22 @@ import time
 import time
 import re
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtCore
 import sys
+import serial
 
-from sonar.forms.main import Ui_MainWindow
+from forms.main import Ui_MainWindow
 
+class Mapping(QtCore.QThread):
+    signalMapping = QtCore.pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+        self.runs = True
+
+    def run( self ):
+        self.signalMapping.emit()
+    
 
 class Sonar(QMainWindow):
     def __init__(self):
@@ -18,6 +30,7 @@ class Sonar(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        
         # Signal/Slot connections
         self.ui.btnConnection.clicked.connect(self.onConnectionClicked)
         self.ui.btnMapping.clicked.connect(self.onMappingClicked)
@@ -25,19 +38,27 @@ class Sonar(QMainWindow):
     def onConnectionClicked(self, ser):
         try:
             #Open port at 9600,8,N,1 no timeout
-            time.sleep(10)
+            #time.sleep(1)
             self.ser = serial.Serial('/dev/ttyUSB0')
         except:
             self.ui.lbConnectionStatus.setText("Connection error!!\nUnable to connect with ATMEGA328P")
             print("Connection error. Unable to connect with ATMEGA328P")
-            self.ui.btnConnection.setEnabled(True)
+            self.ui.btnMapping.setEnabled(True)
         else:
             self.ui.lbConnectionStatus.setText("Connesione stabilita!")
-            self.ui.btnConnection.setEnabled(True)
+            self.ui.btnMapping.setEnabled(True)
 
     def onMappingClicked(self):
-        self.ui.btnConnection.setEnabled(False)
-        mapping()
+        self.ui.btnMapping.setEnabled(False)
+
+        self.map = Mapping()
+        self.mapThread = QtCore.QThread()
+        self.mapThread.started.connect(self.map.run)
+        self.map.signalMapping.connect(self.mapping)
+        self.map.moveToThread(self.mapThread)
+
+        self.mapThread.start()
+
 
     def mapping(self):
         fig  = plot.figure()
@@ -48,13 +69,11 @@ class Sonar(QMainWindow):
         for i in range(0, len(r)):
             theta.append(math.radians(5.625 * i))
 
-        while i < 10000000000:
-            i = i + 1
+        time.sleep(2)
         plot.polar(theta, r)
         # Display the cardioids -
-
         plot.show()
-
+        self.mapThread.exit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
