@@ -10,7 +10,25 @@ from PyQt5 import QtCore
 import sys
 import serial
 
+from kalmanpy import KalmanFilter
 from forms.main import Ui_MainWindow
+
+def hcsr04Filter():
+    sigma_alpha = 0.001
+    sigma_omega = 0.002
+    x0 = np.array([0]).reshape(1,1)
+    F = np.array([1]).reshape(1, 1)
+    B = np.array([0]).reshape(1,1)
+    H = np.array([1]).reshape(1, 1)
+    #System noise covariance matrix
+    Q = np.array([sigma_alpha]).reshape(1, 1)
+    #Measurement noise covariance matrix
+    R = np.array([sigma_omega]).reshape(1, 1)
+    kf= KalmanFilter(F=F, H=H, Q=Q, R=R, x0=x0)
+
+    return kf
+
+
 
 class Mapping(QtCore.QThread):
     signalMapping = QtCore.pyqtSignal()
@@ -27,8 +45,10 @@ class Sonar(QMainWindow):
         self.ser = None
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.kalmanFilter = hcsr04Filter()
         self.theta = []
         self.r = []
+        self.kf_r = []
 
         self.map = Mapping()
         self.mapThread = QtCore.QThread()
@@ -44,7 +64,7 @@ class Sonar(QMainWindow):
         try:
             #Open port at 9600,8,N,1 no timeout
             #time.sleep(1)
-            self.ser = serial.Serial('/dev/ttyUSB1')
+            self.ser = serial.Serial('/dev/ttyUSB0')
         except:
             self.ui.lbConnectionStatus.setText("Connection error!!\nUnable to connect with ATMEGA328P")
             print("Connection error. Unable to connect with ATMEGA328P")
@@ -76,21 +96,29 @@ class Sonar(QMainWindow):
             #Save and convert value on float
             self.theta.append(math.radians(float(degree)))
             self.r.append(float(distance))
-
+            self.kf_r.append(self.kalmanFilter.predicted_state()[0])
+            
             #read line from serial port
             line = self.ser.readline().strip()
             coordinate = line.decode('ascii')
             #Remove special char
             coordinate = coordinate.replace('\r', '')
             coordinate = coordinate.replace('\n', '')
+
+            self.kalmanFilter.update(float(distance))
             time.sleep(0.5)
 
-        plot.polar(self.theta, self.r)
+        plot.polar(self.theta, self.kf_r)
+        plot.polar(self.theta, self.r, 'bo')
         # Display the mapping
         plot.show()
+        self.r.clear()
+        self.kf_r.clear()
+        self.theta.clear()
         self.ui.btnMapping.setEnabled(True)
         self.ui.btnConnection.setEnabled(True)
         self.mapThread.exit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
