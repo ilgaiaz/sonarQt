@@ -24,11 +24,11 @@
        <bool>false</bool>
       </property>
       <property name="currentText">
-       <string>SELECT SERIAL PORT</string>
+       <string>Select serial port</string>
       </property>
       <item>
        <property name="text">
-        <string>SELECT SERIAL PORT</string>
+        <string>Select serial port</string>
        </property>
       </item>
       <item>

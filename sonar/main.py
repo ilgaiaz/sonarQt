@@ -69,6 +69,7 @@ class Sonar(QMainWindow):
             self.ser = serial.Serial('/dev/' + port)
         except:
             self.ui.lbConnectionStatus.setText("Connection error!!\nUnable to connect with ATMEGA328P")
+            self.ui.btnMapping.setEnabled(False)
             print("Connection error. Unable to connect with ATMEGA328P")
         else:
             self.ui.lbConnectionStatus.setText("Established connection")
