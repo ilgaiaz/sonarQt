@@ -16,6 +16,44 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QComboBox" name="comboBox">
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="currentText">
+       <string>SELECT SERIAL PORT</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>SELECT SERIAL PORT</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>rfcomm0</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ttyUSB0</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ttyUSB1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ttyUSB2</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QLabel" name="label">

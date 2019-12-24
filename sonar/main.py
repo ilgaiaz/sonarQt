@@ -64,12 +64,14 @@ class Sonar(QMainWindow):
         try:
             #Open port at 9600,8,N,1 no timeout
             #time.sleep(1)
-            self.ser = serial.Serial('/dev/ttyUSB0')
+            #rfcomm0
+            port = str(self.ui.comboBox.currentText())
+            self.ser = serial.Serial('/dev/' + port)
         except:
             self.ui.lbConnectionStatus.setText("Connection error!!\nUnable to connect with ATMEGA328P")
             print("Connection error. Unable to connect with ATMEGA328P")
         else:
-            self.ui.lbConnectionStatus.setText("Connesione stabilita!")
+            self.ui.lbConnectionStatus.setText("Established connection")
             self.ui.btnMapping.setEnabled(True)
 
     def onMappingClicked(self):
@@ -106,7 +108,7 @@ class Sonar(QMainWindow):
             coordinate = coordinate.replace('\n', '')
 
             self.kalmanFilter.update(float(distance))
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         plot.polar(self.theta, self.kf_r)
         plot.polar(self.theta, self.r, 'bo')
