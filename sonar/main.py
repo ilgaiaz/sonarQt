@@ -72,7 +72,7 @@ class Sonar(QMainWindow):
             self.ui.btnMapping.setEnabled(False)
             print("Connection error. Unable to connect with ATMEGA328P")
         else:
-            self.ui.lbConnectionStatus.setText("Established connection")
+            self.ui.lbConnectionStatus.setText("Connection Established")
             self.ui.btnMapping.setEnabled(True)
 
     def onMappingClicked(self):
@@ -111,7 +111,7 @@ class Sonar(QMainWindow):
             self.kalmanFilter.update(float(distance))
             time.sleep(0.1)
 
-        plot.polar(self.theta, self.kf_r)
+        #plot.polar(self.theta, self.kf_r)
         plot.polar(self.theta, self.r, 'bo')
         # Display the mapping
         plot.show()
@@ -120,6 +120,9 @@ class Sonar(QMainWindow):
         self.theta.clear()
         self.ui.btnMapping.setEnabled(True)
         self.ui.btnConnection.setEnabled(True)
+        self.ui.lbConnectionStatus.setText("Connection closed")
+        self.ui.btnMapping.setEnabled(False)
+        self.ser.close()
         self.mapThread.exit()
 
 
