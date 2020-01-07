@@ -12,7 +12,12 @@ This project started at the end of the main one for create a very simple GUI.
 The GUI give the possibility to select the serial port, create the connection and enable the mapping.
 Below is possible to see the GUI.
 
-![mainWindow](img/sonarGUI.png)
+
+Sonar GUI            |  Result Map
+:-------------------------:|:-------------------------:
+![mainWindow](img/sonarGUI.png)  |  ![Result](img/SonarMap.png)
+
+
 
 ## Install
 Before using the program is necessary to configure the graphic and the connection (required only with the bluetooth module).
