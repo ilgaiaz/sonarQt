@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plot
 import math
-import time
 #import serial
 import time
 import re
@@ -14,8 +13,8 @@ from kalmanpy import KalmanFilter
 from forms.main import Ui_MainWindow
 
 def hcsr04Filter():
-    sigma_alpha = 0.001
-    sigma_omega = 0.002
+    sigma_alpha = 0.00001
+    sigma_omega = 0.0009
     x0 = np.array([0]).reshape(1,1)
     F = np.array([1]).reshape(1, 1)
     B = np.array([0]).reshape(1,1)
@@ -111,7 +110,7 @@ class Sonar(QMainWindow):
             self.kalmanFilter.update(float(distance))
             time.sleep(0.1)
 
-        #plot.polar(self.theta, self.kf_r)
+        plot.polar(self.theta, self.kf_r)
         plot.polar(self.theta, self.r, 'bo')
         # Display the mapping
         plot.show()
